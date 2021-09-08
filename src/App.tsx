@@ -15,7 +15,16 @@ import {
   Avatar,
   Spacer,
   chakra,
+  LinkProps,
+  useDisclosure,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
 } from "@chakra-ui/react";
+import { HamburgerIcon } from "@chakra-ui/icons";
 
 type QuotedProps = {
   children: string;
@@ -81,12 +90,79 @@ function StackEx() {
   );
 }
 
+const HoverLink = (props: LinkProps) => (
+  <Link rounded="base" _hover={{ bg: "gray.200" }} p={2} {...props} />
+);
+
+const Navigation = () => (
+  <Stack as="nav">
+    <HoverLink href="/burger">Burger</HoverLink>
+    <HoverLink href="/sidemenu">Sidemenu</HoverLink>
+    <HoverLink href="/drink">Drink</HoverLink>
+    <HoverLink href="/takeout">Takeout</HoverLink>
+  </Stack>
+);
+
+const DrawerMenu = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = React.useRef(null);
+
+  return (
+    <>
+      <Button ref={btnRef} onClick={onOpen}>
+        <HamburgerIcon />
+      </Button>
+      <Drawer
+        isOpen={isOpen}
+        onClose={onClose}
+        placement="left"
+        finalFocusRef={btnRef}
+      >
+        <DrawerOverlay>
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader>Menu</DrawerHeader>
+            <DrawerBody>
+              <Navigation />
+            </DrawerBody>
+          </DrawerContent>
+        </DrawerOverlay>
+      </Drawer>
+    </>
+  );
+};
+
+type LayoutWithMenuProps = {
+  text: string;
+};
+
+const LayoutWithMenu = (props: LayoutWithMenuProps) => {
+  const { text } = props;
+  return (
+    <Stack>
+      <HStack p={5}>
+        <Box display={{ base: "block", md: "none" }}>
+          <DrawerMenu />
+        </Box>
+        <Heading>Humberger Shop</Heading>
+      </HStack>
+      <HStack alignItems="start">
+        <Box display={{ base: "none", md: "block" }} w={500} px={6}>
+          <Navigation />
+        </Box>
+        <Box>{text}</Box>
+      </HStack>
+    </Stack>
+  );
+};
+
 const App = (): JSX.Element => {
   const sampleText = ["dog", "cat", "rabbit", "mouse"];
   const Canvas = chakra("canvas");
 
   return (
     <ChakraProvider theme={theme}>
+      <LayoutWithMenu text="あああああああああああああああああああああああああああ" />
       <Box px={10} my={10} backgroundColor="#f0f0f0">
         Hello
       </Box>
@@ -150,16 +226,16 @@ const App = (): JSX.Element => {
       </Box>
       <Box>
         <Text fontSize="3xl">Box</Text>
-        {sampleText.map((text) => (
-          <Box bg="red.50" p={2}>
+        {sampleText.map((text, index) => (
+          <Box bg="red.50" p={2} key={index.toString()}>
             {text}
           </Box>
         ))}
       </Box>
       <Stack>
         <Text fontSize="3xl">Box</Text>
-        {sampleText.map((text) => (
-          <Box bg="red.50" p={2}>
+        {sampleText.map((text, index) => (
+          <Box bg="red.50" p={2} key={index.toString()}>
             {text}
           </Box>
         ))}
@@ -182,6 +258,7 @@ const App = (): JSX.Element => {
         <Box color="gray.500">2021-05-01 12:00</Box>
       </HStack>
       <Canvas w={100} h={100} bg="red.100" />
+      <CommentItem />
     </ChakraProvider>
   );
 };
